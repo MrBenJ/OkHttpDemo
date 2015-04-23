@@ -1,8 +1,8 @@
 package com.prismmobile.okhttp;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,9 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.squareup.okhttp.Callback;
@@ -22,14 +20,27 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
+/**
+ * I created my own set of helper methods here that utilize OkHttp.
+ * First, the helper method is RunHttpConnection() - it takes 3 Arguments:
+ * (String URL, Type of Request, and Callback)
+ * The callback is made to execute on the main thread, as you cannot modify
+ * views on a worker thread.
+ *
+ * Although there is a lot of refactoring that can be done here,
+ * I am overall happy about the functionality of this little demo,
+ * and I'm super happy to learn the OkHttp Library. It's really slick,
+ * and it doesn't require busting my balls on working with Android's AsyncTask,
+ * which alone can be quite confusing.
 
+
+ */
 public class MainActivity extends ActionBarActivity implements RequestCallback{
     private final OkHttpClient client = new OkHttpClient();
     private final String TAG = MainActivity.class.getSimpleName();
     private TextView statusText;
-    private Gson gson = new Gson();
     private JsonParser parser = new JsonParser();
-    String endGame;
+    String endGame = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +111,8 @@ public class MainActivity extends ActionBarActivity implements RequestCallback{
 
         if(requestType.equals("GET")) {
             client.newCall(request).enqueue(new Callback() {
+
+                // This grabs the main thread
                 Handler mainThread = new Handler(getBaseContext().getMainLooper());
                 @Override
                 public void onFailure(Request request, IOException throwable) {
